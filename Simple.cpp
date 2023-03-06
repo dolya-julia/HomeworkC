@@ -111,3 +111,76 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+#include <thread>
+#include <iostream>
+#include <omp.h>
+using namespace std;
+void func1(int **a, int ** b) 
+{
+	for (int i = 0; i < 10; i++)
+	{
+		a[i] = new int[10];
+		for (int j = 0; j < 10; j++)
+			a[i][j] = rand()% 10;
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		b[i] = new int[10];
+		for (int j = 0; j < 10; j++)
+			b[i][j] = rand() % 10;
+	}
+}
+void func2(int** a, int** b, int** d)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		d[i] = new int[10];
+		for (int j = 0; j < 10; j++)
+		{
+			d[i][j] = 0;
+			for (int k = 0; k < 10; k++)
+				d[i][j] += a[i][k] * b[k][j];
+		}
+	}
+}
+int main()
+{
+	int** a = new int* [10];
+	int** b = new int* [10];
+	int** d = new int* [10];
+	
+	thread first(func1, a, b);
+	cout << "Performed functions func1 and func2";
+	first.join();
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+			cout << a[i][j] << " ";
+		cout << endl;
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+			cout << b[i][j] << " ";
+		cout << endl;
+	}
+	thread second(func2, a, b, d);
+	second.join();
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+			cout << d[i][j] << " ";
+		cout << endl;
+	}
+	cout << "Threads ended";
+	return 0;
+}
